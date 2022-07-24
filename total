@@ -1,0 +1,54 @@
+clear;clc;
+
+file_path='D:\FPGA_Project\指靜脈\open source\Published_database_FV-USM_Dec2013\Published_database_FV-USM_Dec2013\1st_session\raw_data\039_1\';
+writepath1='D:\FPGA_Project\指靜脈\Result\First Edition\10\';
+writepath2='D:\FPGA_Project\指靜脈\Result\Second Edition\10\';
+
+
+
+img_path_list = dir(strcat(file_path,'*.jpg'));%獲取該資料夾中所有jpg格式的影象
+img_num = length(img_path_list);%獲取影象總數量
+if img_num > 0 %有滿足條件的影象
+        for p = 1:img_num %逐一讀取影象
+            image_name = img_path_list(p).name;% 影象名
+            image =  imread(strcat(file_path,image_name));%讀取影象
+ 
+            %對單幅影象進行操作
+            mention = [image_name,' processing  N'];%告知在處理哪個影象
+            disp(mention)
+       
+            %判斷是否為灰階圖像            
+            image_size=size(image);
+            dimension=numel(image_size);
+            if dimension==2%如果是灰階
+            gr1=image;
+            end
+            if dimension==3%如果是彩色
+            gr1=rgb2gray(image);
+            end
+            
+            %裁切
+            targetSize = [430 200];
+            r = centerCropWindow2d(size(gr1),targetSize);
+            cr = imcrop(gr1,r);
+            %平場校正
+            cr1 = im2gray(cr);
+            bal=imflatfield(cr,30);
+            %直方圖均值化
+            image_his = histeq(bal); 
+            %高斯濾波
+            image_gauss=imgaussfilt(image_his,2);
+            %Canny邊緣偵測
+             image_can = edge(image_gauss,'Canny');
+             %膨脹
+             se = strel('line',6,90);
+             BW2 = imdilate(image_can,se);
+            
+             imwrite(image_can,[writepath1,num2str(p),'.bmp']);
+             imwrite(BW2,[writepath2,num2str(p),'.bmp']);
+             
+           
+
+            
+        end
+end
