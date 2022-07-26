@@ -28,7 +28,7 @@ if img_num > 0 %有滿足條件的影象
             end
             
             %裁切
-            targetSize = [430 200];
+            targetSize = [320 180];
             r = centerCropWindow2d(size(gr1),targetSize);
             cr = imcrop(gr1,r);
             %平場校正
