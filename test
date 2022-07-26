@@ -3,7 +3,7 @@ clear;clc;
 image=imread('01.jpg');
 figure;imshow(image);
 %裁切
-targetSize = [480 200];
+targetSize = [320 180];
 r = centerCropWindow2d(size(image),targetSize);
 cr = imcrop(image,r);
 figure;imshow(cr);title('膨脹');
